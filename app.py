@@ -5,15 +5,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 import threading
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 
-def fetch_credits_summary(username, result):
+def fetch_credits_summary(username, result , url= os.getenv('URL')):
     options = webdriver.ChromeOptions()
     # options.add_argument("--headless")
     options.add_experimental_option("detach", True)
     driver = webdriver.Chrome(options=options)
-    driver.get("http://results.veltech.edu.in/Stulogin/parentlogin.aspx")
+    driver.get(url)
     search_box = driver.find_element(By.ID, 'txtUserName')
     search_box.send_keys(username)
     search_box.send_keys(Keys.RETURN)
@@ -47,12 +49,12 @@ def fetch_credits_summary(username, result):
         "earnedCredits": earnedCredits
     }
 
-def fetch_results(username, result):
+def fetch_results(username, result, url = os.getenv('URL')):
     options = webdriver.ChromeOptions()
     # options.add_argument("--headless")
     options.add_experimental_option("detach", True)
     driver = webdriver.Chrome(options=options)
-    driver.get("http://results.veltech.edu.in/Stulogin/parentlogin.aspx")
+    driver.get(url)
 
     search_box = driver.find_element(By.ID, 'txtUserName')
     search_box.send_keys(username)
