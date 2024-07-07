@@ -5,17 +5,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 import threading
+from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
 load_dotenv()
 import os
 
 app = Flask(__name__)
-
-def fetch_credits_summary(username, result , url= os.getenv('URL')):
+def fetch_credits_summary(username, result , url, service):
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service,options=options)
     driver.get(url)
     search_box = driver.find_element(By.ID, 'txtUserName')
     search_box.send_keys(username)
@@ -43,18 +43,18 @@ def fetch_credits_summary(username, result , url= os.getenv('URL')):
             registeredCredits += data['Credit']
             earnedCredits += data['Earned']
             subjectList[row_data[0]] = data
-    driver.quit()
     result["summary"] = {
         "subjectList": subjectList,
         "registeredCredits": registeredCredits,
         "earnedCredits": earnedCredits
     }
+    driver.quit()
 
-def fetch_results(username, result, url = os.getenv('URL')):
+def fetch_results(username, result, url ,service):
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service, options=options)
     driver.get(url)
 
     search_box = driver.find_element(By.ID, 'txtUserName')
@@ -95,13 +95,15 @@ def fetch_results(username, result, url = os.getenv('URL')):
                 row_data = [cell.text for cell in cells]
                 gradeSheet[row_data[2]] = scoreCard[row_data[4]] if row_data[4] in scoreCard else 0
     
-    driver.quit()
     result["grades"] = gradeSheet
+    driver.quit()
 
-@app.route('/credits_summary/<username>', methods=['GET'])
+@app.route('/credits_summmary/<username>', methods=['GET'])
 def credits_summary(username):
     result = {}
-    thread = threading.Thread(target=fetch_credits_summary, args=(username, result))
+    url = os.getenv("URL")
+    service = Service('chromedriver.exe')
+    thread = threading.Thread(target=fetch_credits_summary, args=(username, result, url, service))
     thread.start()
     thread.join()
     return jsonify(result["summary"])
@@ -109,7 +111,9 @@ def credits_summary(username):
 @app.route('/results/<username>', methods=['GET'])
 def results(username):
     result = {}
-    thread = threading.Thread(target=fetch_results, args=(username, result))
+    url = os.getenv("URL")
+    service = Service('chromedriver.exe')
+    thread = threading.Thread(target=fetch_results, args=(username, result, url, service ))
     thread.start()
     thread.join()
     return jsonify(result["grades"])
