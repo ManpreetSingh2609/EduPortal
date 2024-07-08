@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # Construct the path to the chromedriver
 # base_dir = os.path.dirname(os.path.abspath(__file__))
-# driver_path = os.path.join(base_dir, 'drivers', 'chromedriver.exe')
+driver_path = '/opt/render/project/src/drivers/chromedriver.exe'
 
 @app.route('/', methods=['GET'])
 def home():
@@ -47,7 +47,7 @@ def fetch_results(username):
         })
 
 def fetch_credits(username, summaryObj):
-    # service = Service(driver_path)
+    service = Service(driver_path)
     url = os.environ.get('URL')
 
     if not url:
@@ -55,10 +55,10 @@ def fetch_credits(username, summaryObj):
         return
 
     options = Options()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service, options=options)
 
     try:
         driver.get(url)
@@ -104,7 +104,7 @@ def fetch_credits(username, summaryObj):
         driver.quit()
 
 def fetch_results(username, resultsObj):
-    # service = Service(driver_path)
+    service = Service(driver_path)
     url = os.environ.get('URL')
 
     if not url:
@@ -112,10 +112,10 @@ def fetch_results(username, resultsObj):
         return
 
     options = Options()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(service=service, options=options)
 
     try:
         driver.get(url)
