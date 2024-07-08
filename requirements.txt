@@ -1,5 +1,3 @@
 Flask
 selenium
-python-dotenv
-Werkzeug
-gevent
+gunicorn

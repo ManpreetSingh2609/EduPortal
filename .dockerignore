@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.swp
+.Python
+env
+venv
+ENV
+build
+dist
+*.egg-info
+*.idea
+.git

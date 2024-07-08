@@ -7,9 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-import os
-
-
+from multiprocessing import Process, Manager
 
 app = Flask(__name__)
 
@@ -17,15 +15,42 @@ app = Flask(__name__)
 base_dir = os.path.dirname(os.path.abspath(__file__))
 driver_path = os.path.join(base_dir, 'drivers', 'chromedriver.exe')
 
-@app.route('/credits_summary/<username>', methods=['GET'])
-def fetch_credits_summary(username):
-    # Initialize variables inside the function
-    summaryObj = {}
+@app.route('/', methods=['GET'])
+def home():
+    return "Welcome to the EduPortal API"
+
+@app.route('/results/<username>', methods=['GET'])
+def fetch_results(username):
+    with Manager() as manager:
+        summaryObj = manager.dict()
+        resObj = manager.dict()
+
+        credits_process = Process(target=fetch_credits, args=(username, summaryObj))
+        results_process = Process(target=fetch_results, args=(username, resObj))
+
+        credits_process.start()
+        results_process.start()
+
+        credits_process.join()
+        results_process.join()
+
+        if "error" in summaryObj or "error" in resObj:
+            return jsonify({'error': summaryObj.get("error", resObj.get("error"))}), 500
+
+        return jsonify({
+            'registeredCredits': summaryObj.get('registeredCredits', 0),
+            'earnedCredits': summaryObj.get('earnedCredits', 0),
+            'subjectList': summaryObj.get('subjectList', {}),
+            'grades': resObj.get('grades', {})
+        })
+
+def fetch_credits(username, summaryObj):
     service = Service(driver_path)
-    url = os.environ.get("URL")
+    url = os.environ.get('URL')
 
     if not url:
-        return jsonify({"error": "URL environment variable is not set"}), 500
+        summaryObj["error"] = "URL environment variable is not set"
+        return
 
     options = Options()
     options.add_argument("--headless")
@@ -35,18 +60,18 @@ def fetch_credits_summary(username):
 
     try:
         driver.get(url)
-        search_box = driver.find_element(By.ID, 'txtUserName')
+        search_box = driver.find_element(By.ID, os.environ.get('box'))
         search_box.send_keys(username)
         search_box.send_keys(Keys.RETURN)
 
-        nav = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, 'nav')))
-        resultsButton = nav.find_element(By.XPATH, "//*[@id='nav']/li[5]")
+        nav = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, os.environ.get('bar'))))
+        resultsButton = nav.find_element(By.XPATH, os.environ.get('resBtn'))
         resultsButton.click()
-        creditsButton = resultsButton.find_element(By.XPATH, "//ul/li[6]")
+        creditsButton = resultsButton.find_element(By.XPATH,  os.environ.get('credBtn'))
         link = WebDriverWait(creditsButton, 60).until(EC.element_to_be_clickable((By.TAG_NAME, 'a')))
         link.click()
 
-        creditsTable = driver.find_element(By.ID, 'ContentPlaceHolder1_gvCredits')
+        creditsTable = driver.find_element(By.ID, os.environ.get('credTable'))
         rows = creditsTable.find_elements(By.TAG_NAME, 'tr')
 
         subjectList = {}
@@ -70,23 +95,19 @@ def fetch_credits_summary(username):
         summaryObj["registeredCredits"] = registeredCredits
         summaryObj["earnedCredits"] = earnedCredits
 
-        return jsonify(summaryObj)
-
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        summaryObj["error"] = str(e)
 
     finally:
         driver.quit()
-        
-@app.route('/results/<username>', methods=['GET'])
-def fetch_results(username):
-    # Initialize variables inside the function
-    resultsObj = {}
+
+def fetch_results(username, resultsObj):
     service = Service(driver_path)
-    url = os.environ.get("URL")
+    url = os.environ.get('URL')
 
     if not url:
-        return jsonify({"error": "URL environment variable is not set"}), 500
+        resultsObj["error"] = "URL environment variable is not set"
+        return
 
     options = Options()
     options.add_argument("--headless")
@@ -96,16 +117,16 @@ def fetch_results(username):
 
     try:
         driver.get(url)
-        search_box = driver.find_element(By.ID, 'txtUserName')
+        search_box = driver.find_element(By.ID, os.environ.get('box'))
         search_box.send_keys(username)
         search_box.send_keys(Keys.RETURN)
 
-        currentSemester = int(driver.find_element(By.XPATH, '//*[@id="divlogin-table"]/table[1]/tbody/tr[7]/td[2]').text)
+        currentSemester = int(driver.find_element(By.XPATH, os.envirn('currSem')).text)
 
         nav = WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.ID, 'nav')))
-        resultsButton = nav.find_element(By.XPATH, "//*[@id='nav']/li[5]")
+        resultsButton = nav.find_element(By.XPATH, os.environ.get('resBtn'))
         resultsButton.click()
-        results = resultsButton.find_element(By.XPATH, "//*[@id='nav']/li[5]/ul/li[1]")
+        results = resultsButton.find_element(By.XPATH, os.environ.get('res'))
         link = WebDriverWait(results, 60).until(EC.element_to_be_clickable((By.TAG_NAME, 'a')))
         link.click()
 
@@ -114,13 +135,13 @@ def fetch_results(username):
 
         for sem in range(1, currentSemester + 1):
             if sem == 1:
-                creditsTable = driver.find_element(By.ID, 'ContentPlaceHolder1_gvExamResult2013')
+                creditsTable = driver.find_element(By.ID, os.environ.get('resTable'))  
             else:
-                semButton = driver.find_element(By.ID, "ContentPlaceHolder1_ddlSemester")
+                semButton = driver.find_element(By.ID, os.environ.get('semBtn'))
                 semButton.click()
-                selectedSem = semButton.find_element(By.XPATH, f"//*[@id='ContentPlaceHolder1_ddlSemester']/option[{sem}]")
+                selectedSem = semButton.find_element(By.XPATH, f"{os.environ.get('semSel')}[{sem}]")
                 selectedSem.click()
-                creditsTable = driver.find_element(By.ID, 'ContentPlaceHolder1_gvExamResult2013')
+                creditsTable = driver.find_element(By.ID, os.environ.get('resTable'))   
 
             rows = creditsTable.find_elements(By.TAG_NAME, 'tr')[1:]  # Skip the header row
 
@@ -132,16 +153,12 @@ def fetch_results(username):
                 gradeSheet[course_code] = scoreCard.get(grade, 0)
 
         resultsObj["grades"] = gradeSheet
-        return jsonify(resultsObj)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        resultsObj["error"] = str(e)
 
     finally:
         driver.quit()
-        
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=1011)
-    
-    # http_server = WSGIServer(('', 1011),app)
-    # http_server.serve_forever()
+    app.run(debug=True, host= os.environ.get('host'), port = os.environ.get('port'))
