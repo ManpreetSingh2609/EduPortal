@@ -98,9 +98,9 @@ def fetch_results(username, result, url ,service):
     result["grades"] = gradeSheet
     driver.quit()
 
-@app.route('/credits_summmary/<username>', methods=['GET'])
+@app.route('/credits_summary/<username>', methods=['GET'])
 def credits_summary(username):
-    result = {}
+    result = {"summary" : {} }
     url = os.getenv("URL")
     service = Service('chromedriver.exe')
     thread = threading.Thread(target=fetch_credits_summary, args=(username, result, url, service))
@@ -110,7 +110,7 @@ def credits_summary(username):
 
 @app.route('/results/<username>', methods=['GET'])
 def results(username):
-    result = {}
+    result = {'grades': {} }
     url = os.getenv("URL")
     service = Service('chromedriver.exe')
     thread = threading.Thread(target=fetch_results, args=(username, result, url, service ))
@@ -119,4 +119,4 @@ def results(username):
     return jsonify(result["grades"])
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, host='0.0.0.0', port= 1101)
+    app.run(debug=True, threaded=True, host='0.0.0.0', port= 1011)
