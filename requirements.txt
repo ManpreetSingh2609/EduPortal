@@ -2,3 +2,4 @@ Flask
 selenium
 python-dotenv
 Werkzeug
+gevnet
