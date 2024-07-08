@@ -7,8 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from dotenv import load_dotenv
-load_dotenv()
 import os
 
 
@@ -24,7 +22,7 @@ def fetch_credits_summary(username):
     # Initialize variables inside the function
     summaryObj = {}
     service = Service(driver_path)
-    url = os.getenv("URL")
+    url = os.environ.get("URL")
 
     if not url:
         return jsonify({"error": "URL environment variable is not set"}), 500
@@ -85,7 +83,7 @@ def fetch_results(username):
     # Initialize variables inside the function
     resultsObj = {}
     service = Service(driver_path)
-    url = os.getenv("URL")
+    url = os.environ.get("URL")
 
     if not url:
         return jsonify({"error": "URL environment variable is not set"}), 500
