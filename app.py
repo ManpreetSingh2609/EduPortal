@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-import threading
+from gevnet.pywsgi import WSGIServer
 from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
 load_dotenv()
@@ -15,11 +15,11 @@ app = Flask(__name__)
 @app.route('/credits_summary/<username>', methods=['GET'])
 def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
     summaryObj={};
-    try:
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        options.add_experimental_option("detach", True)
-        driver = webdriver.Chrome(service=service,options=options)
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_experimental_option("detach", True)
+    driver = webdriver.Chrome(service=service,options=options)
+    try:        
         driver.get(url)
         search_box = driver.find_element(By.ID, 'txtUserName')
         search_box.send_keys(username)
@@ -59,13 +59,12 @@ def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=o
 @app.route('/results/<username>', methods=['GET'])
 def fetch_results(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
     resultsObj={};
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_experimental_option("detach", True)
+    driver = webdriver.Chrome(service=service, options=options)
     try:
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        options.add_experimental_option("detach", True)
-        driver = webdriver.Chrome(service=service, options=options)
         driver.get(url)
-    
         search_box = driver.find_element(By.ID, 'txtUserName')
         search_box.send_keys(username)
         search_box.send_keys(Keys.RETURN)
@@ -108,26 +107,7 @@ def fetch_results(username, service= Service('chromedriver.exe') , url=os.getenv
         return(resultsObj)
     finally:
         driver.quit()
-
-# @app.route('/credits_summary/<username>', methods=['GET'])
-# def credits_summary(username):
-#     result = {"summary" : {} }
-#     url = os.getenv("URL")
-#     service = Service('chromedriver.exe')
-#     thread = threading.Thread(target=fetch_credits_summary, args=(username, result, url, service))
-#     thread.start()
-#     thread.join()
-#     return jsonify(result["summary"])
-
-# @app.route('/results/<username>', methods=['GET'])
-# def results(username):
-#     result = {'grades': {} }
-#     url = os.getenv("URL")
-#     service = Service('chromedriver.exe')
-#     thread = threading.Thread(target=fetch_results, args=(username, result, url, service ))
-#     thread.start()
-#     thread.join()
-#     return jsonify(result["grades"])
-
+        
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port= 1011)
+    http_server = WSGIServer(('', 1011),app)
+    http_server.server_forever()
