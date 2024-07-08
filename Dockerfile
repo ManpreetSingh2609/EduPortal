@@ -20,6 +20,9 @@ COPY requirements.txt ./
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install gunicorn
+RUN pip install gunicorn
+
 # Stage 2: Final image
 FROM python:3.9-slim
 
