@@ -1,3 +1,6 @@
 Flask
 selenium
 gunicorn
+requests
+zipfile36
+platformdirs

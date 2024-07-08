@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from multiprocessing import Process, Manager
+from install import download_chromedriver
+
 
 app = Flask(__name__)
 
@@ -161,4 +163,10 @@ def fetch_results(username, resultsObj):
         driver.quit()
 
 if __name__ == '__main__':
+    try:
+        download_chromedriver()
+    except Exception as e:
+        print(f'Error downloading Chromedriver: {e}')
+        exit(1)
+
     app.run(debug=True, host= os.environ.get('host'), port = os.environ.get('port'))
