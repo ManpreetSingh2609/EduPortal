@@ -13,8 +13,8 @@ import os
 app = Flask(__name__)
 
 @app.route('/credits_summary/<username>', methods=['GET'])
-def fetch_credits_summary(username, result , url, service):
-    results={};
+def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
+    summaryObj={};
     try:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
@@ -47,18 +47,18 @@ def fetch_credits_summary(username, result , url, service):
                 registeredCredits += data['Credit']
                 earnedCredits += data['Earned']
                 subjectList[row_data[0]] = data
-        result["subjectList"] : subjectList,
-        result["registeredCredits"] : registeredCredits,
-        result["earnedCredits"] : earnedCredits
-        return(results)
+        summaryObj["subjectList"] : subjectList,
+        summaryObj["registeredCredits"] : registeredCredits,
+        summaryObj["earnedCredits"] : earnedCredits
+        return(summaryObj)
 
     finally:
         driver.quit()
 
 
 @app.route('/results/<username>', methods=['GET'])
-def fetch_results(username, result, url ,service):
-    results={};
+def fetch_results(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
+    resultsObj={};
     try:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
@@ -104,8 +104,8 @@ def fetch_results(username, result, url ,service):
                     row_data = [cell.text for cell in cells]
                     gradeSheet[row_data[2]] = scoreCard[row_data[4]] if row_data[4] in scoreCard else 0
         
-        result["grades"] = gradeSheet
-        return(resuts)
+        resultsObj["grades"] = gradeSheet
+        return(resultsObj)
     finally:
         driver.quit()
 
