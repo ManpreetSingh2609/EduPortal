@@ -55,10 +55,10 @@ def fetch_credits(username, summaryObj):
         return
 
     options = Options()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(executable_path = r'./drivers/chromedriver.exe', options=options)
+    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
@@ -112,10 +112,10 @@ def fetch_results(username, resultsObj):
         return
 
     options = Options()
-    options.add_argument("--headless")
+    # options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(executable_path = r'./drivers/chromedriver.exe', options=options)
+    driver = webdriver.Chrome(options=options)
 
     try:
         driver.get(url)
