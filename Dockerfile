@@ -1,30 +1,34 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+# Stage 1: Install dependencies
+FROM python:3.9-slim AS build-stage
+RUN apt update && apt install -y wget gnupg unzip
 
-# Set the working directory in the container
-WORKDIR /app
+# Download and add Google signing key
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 
-# Copy the current directory contents into the container at /app
-ADD . /app
+# Add Google Chrome repository
+RUN echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
 
-# Install the necessary packages
+# Update package lists again
+RUN apt update
+
+# Install Chrome and ChromeDriver
+RUN apt install -y google-chrome-stable chromium-chromedriver
+
+# Copy requirements.txt to build stage (optional)
+COPY requirements.txt ./
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Chrome browser
-RUN apt-get update && apt-get install -y \
-    wget \
-    gnupg \
-    unzip \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable
+# Stage 2: Final image
+FROM python:3.9-slim
 
-# Add the ChromeDriver to the path
-ENV PATH="/app/drivers:${PATH}"
+# Set working directory
+WORKDIR /app
 
-# Make port 1010 available to the world outside this container
-EXPOSE 1010
+# Copy application code and requirements (if not copied in build stage)
+COPY requirements.txt .
+COPY . .
 
-# Run Gunicorn to serve the Flask app
+# Run the Flask application with Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:1010", "app:app"]
