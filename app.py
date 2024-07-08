@@ -13,7 +13,7 @@ import os
 app = Flask(__name__)
 
 @app.route('/credits_summary/<username>', methods=['GET'])
-def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
+def fetch_credits_summary(username, service= Service('./chromedriver.exe') , url=os.getenv("URL")):
     summaryObj={};
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -57,7 +57,7 @@ def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=o
 
 
 @app.route('/results/<username>', methods=['GET'])
-def fetch_results(username, service= Service('chromedriver.exe') , url=os.getenv("URL")):
+def fetch_results(username, service= Service('./chromedriver.exe') , url=os.getenv("URL")):
     resultsObj={};
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
