@@ -8,14 +8,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from multiprocessing import Process, Manager
-from install import download_chromedriver
+# from install import download_chromedriver
 
 
 app = Flask(__name__)
 
 # Construct the path to the chromedriver
-base_dir = os.path.dirname(os.path.abspath(__file__))
-driver_path = os.path.join(base_dir, 'drivers', 'chromedriver.exe')
+# base_dir = os.path.dirname(os.path.abspath(__file__))
+# driver_path = os.path.join(base_dir, 'drivers', 'chromedriver.exe')
 
 @app.route('/', methods=['GET'])
 def home():
@@ -47,7 +47,7 @@ def fetch_results(username):
         })
 
 def fetch_credits(username, summaryObj):
-    service = Service(driver_path)
+    # service = Service(driver_path)
     url = os.environ.get('URL')
 
     if not url:
@@ -58,7 +58,7 @@ def fetch_credits(username, summaryObj):
     options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(executable_path = r'./drivers/chromedriver.exe', options=options)
 
     try:
         driver.get(url)
@@ -104,7 +104,7 @@ def fetch_credits(username, summaryObj):
         driver.quit()
 
 def fetch_results(username, resultsObj):
-    service = Service(driver_path)
+    # service = Service(driver_path)
     url = os.environ.get('URL')
 
     if not url:
@@ -115,7 +115,7 @@ def fetch_results(username, resultsObj):
     options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(executable_path = r'./drivers/chromedriver.exe', options=options)
 
     try:
         driver.get(url)
@@ -163,10 +163,10 @@ def fetch_results(username, resultsObj):
         driver.quit()
 
 if __name__ == '__main__':
-    try:
-        download_chromedriver()
-    except Exception as e:
-        print(f'Error downloading Chromedriver: {e}')
-        exit(1)
+    # try:
+    #     download_chromedriver()
+    # except Exception as e:
+    #     print(f'Error downloading Chromedriver: {e}')
+    #     exit(1)
 
     app.run(debug=True, host= os.environ.get('host'), port = os.environ.get('port'))
