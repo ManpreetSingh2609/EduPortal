@@ -47,8 +47,8 @@ def fetch_credits_summary(username, service= Service('chromedriver.exe') , url=o
                 registeredCredits += data['Credit']
                 earnedCredits += data['Earned']
                 subjectList[row_data[0]] = data
-        summaryObj["subjectList"] : subjectList,
-        summaryObj["registeredCredits"] : registeredCredits,
+        summaryObj["subjectList"] : subjectList
+        summaryObj["registeredCredits"] : registeredCredits
         summaryObj["earnedCredits"] : earnedCredits
         return(summaryObj)
 
