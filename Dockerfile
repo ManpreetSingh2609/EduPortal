@@ -5,11 +5,11 @@ FROM python:3.9-slim AS build-stage
 RUN apt-get update && \
     apt-get install -y wget gnupg unzip
 
-# Install Chrome and ChromeDriver
+# Install ChromeDriver
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
     echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list && \
     apt-get update && \
-    apt-get install -y google-chrome-stable chromium-chromedriver
+    apt-get install -y chromium-chromedriver
 
 # Install Python dependencies
 COPY requirements.txt /app/requirements.txt
@@ -26,8 +26,8 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy application code and requirements from build stage
-COPY --from=build-stage /usr/bin/chromedriver /usr/bin/chromedriver
-COPY --from=build-stage /usr/lib/chromium /usr/lib/chromium
+# Identify specific ChromeDriver dependencies
+RUN ldd /usr/bin/chromedriver | awk '/chromium/{print $3}' | xargs -I {} cp --from=build-stage /usr/lib/chromium/{} /usr/lib/chromium/{}
 
 # Copy application code
 COPY --from=build-stage /app .
