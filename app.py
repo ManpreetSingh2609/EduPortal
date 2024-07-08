@@ -110,4 +110,4 @@ def fetch_results(username, service= Service('chromedriver.exe') , url=os.getenv
         
 if __name__ == '__main__':
     http_server = WSGIServer(('', 1011),app)
-    http_server.server_forever()
+    http_server = serve_forever()
