@@ -119,4 +119,4 @@ def results(username):
     return jsonify(result["grades"])
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True, port = 1010)
+    app.run(debug=True, threaded=True, host='0.0.0.0', port= 1101)
