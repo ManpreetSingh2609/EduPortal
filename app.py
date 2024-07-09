@@ -234,6 +234,7 @@ def fetch_credits(username, summaryObj):
     options.add_experimental_option("detach", True)
 
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
 
     try:
         driver.get(url)
@@ -291,6 +292,7 @@ def fetch_results(username, resultsObj):
     options.add_experimental_option("detach", True)
 
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
 
     try:
         driver.get(url)
