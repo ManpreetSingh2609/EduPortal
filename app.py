@@ -233,7 +233,7 @@ def fetch_credits(username, summaryObj):
     options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=options)
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
     try:
         driver.get(url)
@@ -290,7 +290,7 @@ def fetch_results(username, resultsObj):
     options.add_argument("--headless")
     options.add_experimental_option("detach", True)
 
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=options)
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 
     try:
         driver.get(url)
