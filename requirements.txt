@@ -1,6 +1,4 @@
 Flask
 selenium
 gunicorn
-requests
-zipfile36
-platformdirs
+webdriver_manager
