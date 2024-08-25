@@ -6,7 +6,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         'flask',
-        'selenium'
+        'selenium',
+        'waitress'
         # Add other dependencies here
     ],
     # Other setup arguments
