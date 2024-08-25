@@ -148,5 +148,5 @@ def fetch_results(username, resultsObj):
     finally:
         driver.quit()
         
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=1011)
+# if __name__ == '__main__':
+#     app.run(debug=True, host='0.0.0.0', port=1011)
