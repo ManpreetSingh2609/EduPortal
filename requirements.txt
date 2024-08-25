@@ -1,4 +1,4 @@
 Flask
 selenium
-gunicorn
-webdriver_manager
+multiprocessing
+
