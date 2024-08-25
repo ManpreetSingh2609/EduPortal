@@ -6,5 +6,4 @@ instance/
 venv/
 .idea/
 /build/
-/dist/
 *.egg-info/
