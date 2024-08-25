@@ -45,7 +45,7 @@ def fetch_results_route(username):
         })
 
 def fetch_credits(username, summaryObj):
-    service = Service(r"/usr/local/bin/chromedriver")
+    service = Service("/opt/render/chromedriver")
     url = 'http://results.veltech.edu.in/Stulogin/parentlogin.aspx'
 
     options = Options()
@@ -95,7 +95,7 @@ def fetch_credits(username, summaryObj):
         driver.quit()
     
 def fetch_results(username, resultsObj):
-    service = Service(r"/usr/local/bin/chromedriver")
+    service = Service("/opt/render/chromedriver")
     url = 'http://results.veltech.edu.in/Stulogin/parentlogin.aspx'
 
     options = Options()
