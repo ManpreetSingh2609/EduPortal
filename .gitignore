@@ -3,7 +3,5 @@ __pycache__/
 *.env
 .DS_Store
 instance/
-venv/
 .idea/
-/build/
 *.egg-info/
