@@ -45,13 +45,14 @@ def fetch_results_route(username):
         })
 
 def fetch_credits(username, summaryObj):
-    # service = Service(driver_path)
+    service = Service("/usr/local/bin/chromedriver")
     url = 'http://results.veltech.edu.in/Stulogin/parentlogin.aspx'
 
     options = Options()
     options.add_argument("--headless")
-    options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=options)
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(service=service, options=options)
     try:
         driver.get(url)
         search_box = driver.find_element(By.ID, 'txtUserName')
@@ -94,13 +95,14 @@ def fetch_credits(username, summaryObj):
         driver.quit()
     
 def fetch_results(username, resultsObj):
-    # service = Service(driver_path)
+    service = Service("/usr/local/bin/chromedriver")
     url = 'http://results.veltech.edu.in/Stulogin/parentlogin.aspx'
 
     options = Options()
     options.add_argument("--headless")
-    options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=options)
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(service=service, options=options)
 
     try:
         driver.get(url)
