@@ -6,8 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'flask',
-        'selenium',
-        'multiprocessing'
+        'selenium'
         # Add other dependencies here
     ],
     # Other setup arguments
