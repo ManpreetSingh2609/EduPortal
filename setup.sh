@@ -9,9 +9,10 @@ sudo apt-get install -y google-chrome-stable
 
 # Install Chromedriver
 echo "Installing Chromedriver"
-CHROMEDRIVER_VERSION=`curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE`
-wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -P ~/
+wget -N https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -P ~/
 unzip ~/chromedriver_linux64.zip -d ~/
 sudo mv -f ~/chromedriver /usr/local/bin/chromedriver
 sudo chmod +x /usr/local/bin/chromedriver
 rm ~/chromedriver_linux64.zip
+
+echo "setup.sh script completed!"
