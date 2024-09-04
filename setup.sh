@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
+# exit on error
+set -o errexit
 
-# Install Chrome browser
-echo "Installing Google Chrome"
-wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
-sudo apt-get update
-sudo apt-get install -y google-chrome-stable
+STORAGE_DIR=/opt/render/project/.render
 
-# Install Chromedriver
-echo "Installing Chromedriver"
-wget -N https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -P ~/
-unzip ~/chromedriver_linux64.zip -d ~/
-# mv -f ~/opt/render/chromedriver /usr/local/bin/chromedriver
-# chmod +x /usr/local/bin/chromedriver
-rm ~/chromedriver_linux64.zip
+if [[ ! -d $STORAGE_DIR/chrome ]]; then
+  echo "...Downloading Chrome"
+  mkdir -p $STORAGE_DIR/chrome
+  cd $STORAGE_DIR/chrome
+  wget -P ./ https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+  dpkg -x ./google-chrome-stable_current_amd64.deb $STORAGE_DIR/chrome
+  rm ./google-chrome-stable_current_amd64.deb
+  cd $HOME/project/src # Make sure we return to where we were
+else
+  echo "...Using Chrome from cache"
+fi
 
-echo "setup.sh script completed!"
+# be sure to add Chromes location to the PATH as part of your Start Command
+export PATH="${PATH}:/opt/render/project/.render/chrome/opt/google/chrome"
+
+# add your own build commands...
